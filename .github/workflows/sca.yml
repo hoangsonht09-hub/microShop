@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. Checkout code về máy ảo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Cài đặt môi trường Java (Yêu cầu JDK 21 như tài liệu) 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -24,21 +22,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-     # 3. Build dự án (Giữ nguyên bước này)
       - name: Build project
         run: mvn clean install -DskipTests
 
-      # 4. Chạy OWASP Dependency Check bằng Maven (THAY ĐỔI ĐOẠN NÀY)
-      # Chạy trực tiếp lệnh Maven, không cần sửa pom.xml, không lo lỗi Docker
       - name: OWASP Dependency Check
         run: mvn org.owasp:dependency-check-maven:check -Dformat=HTML
 
-      # 5. Lưu báo cáo (CẬP NHẬT ĐƯỜNG DẪN MỚI)
       - name: Upload Test results
         uses: actions/upload-artifact@v4
         with:
           name: Dependency-Check-Report
-          # Maven sẽ xuất báo cáo vào thư mục 'target'
           path: target/dependency-check-report.html
-          name: Dependency-Check-Report
-          path: reports/dependency-check-report.html
