@@ -21,7 +21,7 @@ jobs:
         with:
           project: 'microShop'
           path: '.'
-          format: 'HTML,JSON,XML'
+          format: 'HTML'
           out: 'reports'
           args: >
             --enableExperimental
