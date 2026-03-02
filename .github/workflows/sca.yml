@@ -8,26 +8,40 @@ jobs:
   analyze:
     name: Analyze Dependencies
     runs-on: ubuntu-latest
-    
+
     steps:
-      # 1. Lấy code về
+
+      # 1. Checkout source code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Chạy tool quét ngay lập tức (Không cài Java để tránh lỗi xung đột)
-      - name: OWASP Dependency Check
+      # 2. Cài Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Build project để tải toàn bộ dependencies
+      - name: Build project with Maven
+        run: mvn clean install -DskipTests
+
+      # 4. Chạy OWASP Dependency Check
+      - name: Run OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
           project: 'microShop'
           path: '.'
           format: 'HTML'
           out: 'reports'
-          # Bỏ qua quét node_modules nếu dự án có lẫn JS để chạy nhanh hơn
           args: >
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
+            --scan .
             --enableExperimental
-            --disableAssembly
-          
-      # 3. Lưu báo cáo
+            --enableRetired
+            --prettyPrint
+
+      # 5. Upload report
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
