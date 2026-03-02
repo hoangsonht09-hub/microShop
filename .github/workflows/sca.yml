@@ -11,12 +11,12 @@ jobs:
 
     steps:
 
-    # Bước 1: tải source code
+    # 1. Checkout source
     - name: Checkout source code
       uses: actions/checkout@v4
 
 
-    # Bước 2: cài Java 21
+    # 2. Setup Java
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
@@ -24,23 +24,24 @@ jobs:
         java-version: 21
 
 
-    # Bước 3: build project bằng Maven
+    # 3. Build project
     - name: Build project
       run: mvn clean install -DskipTests
 
 
-    # Bước 4: chạy OWASP Dependency Check
+    # 4. Run Dependency Check CLI directly (FIX JAVA_HOME ERROR)
     - name: Run OWASP Dependency Check
-      uses: dependency-check/Dependency-Check_Action@main
-      id: depcheck
-      with:
-        project: "microShop"
-        path: "."
-        format: "HTML"
-        out: "reports"
+      run: |
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+        unzip dependency-check-9.0.9-release.zip
+        dependency-check/bin/dependency-check.sh \
+          --project "microShop" \
+          --scan "." \
+          --format "HTML" \
+          --out "reports"
 
 
-    # Bước 5: upload report để tải về
+    # 5. Upload report
     - name: Upload report
       uses: actions/upload-artifact@v4
       with:
