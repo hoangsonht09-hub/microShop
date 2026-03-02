@@ -3,63 +3,37 @@ name: SCA - OWASP Dependency Check
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch:
 
 jobs:
   analyze:
-    name: Analyze Dependencies (SCA)
     runs-on: ubuntu-latest
-
+    
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 1. Checkout source code
-    - name: Checkout source code
-      uses: actions/checkout@v4
+      # Build project
+      - name: Build project
+        run: mvn -B clean package -DskipTests
 
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'microShop'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
+            --enableExperimental
+            --enableRetired
+            --scan target
+            --format HTML
+            --format JSON
+            --format XML
 
-    # 2. Setup Java (REQUIRED for Maven project)
-    - name: Setup Java 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
-        cache: maven
-
-
-    # 3. Build project và tải toàn bộ dependencies
-    - name: Build project with Maven
-      run: mvn -B clean install -DskipTests
-
-
-    # 4. Run OWASP Dependency Check
-    - name: Run OWASP Dependency Check
-      uses: dependency-check/Dependency-Check_Action@main
-      with:
-        project: microShop
-        path: .
-        out: reports
-        args: >
-          --nvdApiKey ${{ secrets.NVD_API_KEY }}
-          --enableExperimental
-          --enableRetired
-          --scan target
-          --scan ~/.m2/repository
-          --format HTML
-          --format JSON
-          --format XML
-          --format SARIF
-
-
-    # 5. Upload report để download
-    - name: Upload Dependency Check Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: Dependency-Check-Report
-        path: reports/
-
-
-    # 6. Upload SARIF để hiển thị trong GitHub Security tab
-    - name: Upload SARIF report to GitHub Security
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: reports/dependency-check-report.sarif
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dependency-Check-Report
+          path: reports/
