@@ -27,6 +27,8 @@ jobs:
             --enableExperimental
             --disableAssembly
             --failOnCVSS 11
+            --format JSON
+            --format XML
           
       - name: Upload Report
         uses: actions/upload-artifact@v4
