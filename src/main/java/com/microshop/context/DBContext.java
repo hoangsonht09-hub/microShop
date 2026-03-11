@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+// DMSONDAN
+
 public class DBContext {
     
     // jdbc:mysql - định dạng kết nối JDBC cho MySQL
