@@ -1,4 +1,14 @@
-steps:
+name: SCA - OWASP Dependency Check
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
